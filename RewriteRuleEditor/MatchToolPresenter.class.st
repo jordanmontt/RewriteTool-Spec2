@@ -22,7 +22,8 @@ Class {
 		'methodCheckbox',
 		'astPattern',
 		'astCode',
-		'patternLabel'
+		'patternLabel',
+		'doneMatchesCollection'
 	],
 	#category : #'RewriteRuleEditor-Matcher'
 }
@@ -114,6 +115,12 @@ MatchToolPresenter class >> width [
 	^ 230
 ]
 
+{ #category : #actions }
+MatchToolPresenter >> addMatchExpressionToCollection [
+
+	doneMatchesCollection addChange: self
+]
+
 { #category : #accessing }
 MatchToolPresenter >> astCode [
 
@@ -181,6 +188,13 @@ MatchToolPresenter >> getBindingsItemsForMatch: bindingsAssociation [
 			ifTrue: [ newItems add: (value collect: [ :each | key -> each ]) ]
 			ifFalse: [ newItems add: key -> value ] ].
 	^ newItems flattened
+]
+
+{ #category : #initialization }
+MatchToolPresenter >> initialize [
+
+	doneMatchesCollection := TempRuleChanges new.
+	super initialize
 ]
 
 { #category : #initialization }
@@ -298,6 +312,7 @@ MatchToolPresenter >> performMatching [
 	self parsePatternAST.
 	self parseCodeAST.
 	self emptyLists.
+	self addMatchExpressionToCollection.
 	matches := OrderedCollection new.
 	astCode doSemanticAnalysis.
 	astCode nodesDo: [ :node | 
